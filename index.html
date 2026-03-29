@@ -3,44 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Bảo Trì KLM</title>
+    <title>Hệ Thống Quản Lý Bảo Trì KLM</title>
     <style>
-        :root { --primary: #1a73e8; --success: #28a745; --danger: #d32f2f; --warning: #f9ab00; }
+        :root {
+            --primary: #1a73e8;
+            --success: #28a745;
+            --danger: #d32f2f;
+            --warning: #f9ab00;
+        }
+
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 15px; background-color: #f1f3f4; }
         .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); text-align: center; text-transform: uppercase; font-size: 1.1rem; }
+        
+        h2 { color: var(--primary); text-align: center; margin-bottom: 20px; text-transform: uppercase; font-size: 1.1rem; }
+
+        /* Bảng điều khiển */
         .control-panel { margin-bottom: 20px; padding: 15px; background: #fffde7; border-radius: 8px; border: 1px solid #ffe082; }
-        .search-input { width: 100%; padding: 12px; border: 2px solid var(--primary); border-radius: 6px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
-        .filter-group { display: flex; gap: 5px; flex-wrap: wrap; }
-        .filter-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 12px; }
-        .table-res { overflow-x: auto; margin-top: 10px; max-height: 70vh; }
+        .search-input { width: 100%; padding: 12px; border: 2px solid var(--primary); border-radius: 6px; font-size: 16px; box-sizing: border-box; margin-bottom: 12px; }
+        
+        .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-btn { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; transition: 0.2s; min-width: 120px; }
+        
+        .btn-all { background: #607d8b; }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: #333; }
+        .btn-success { background: var(--success); }
+        .filter-btn:hover { opacity: 0.8; transform: scale(1.02); }
+
+        /* Bảng hiển thị */
+        .table-res { overflow-x: auto; margin-top: 10px; max-height: 65vh; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-size: 13px; position: sticky; top: 0; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-size: 13px; position: sticky; top: 0; z-index: 10; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
         tr.hidden { display: none; }
-        .status { padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .st-danger { background: #fdecea; color: var(--danger); }
-        .st-warning { background: #fff9c4; color: #827717; }
-        .st-success { background: #e6f4ea; color: #1e7e34; }
-        .update-box { display: flex; gap: 5px; }
-        .date-input { padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-        .btn-up { background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        #loading { text-align: center; display: none; color: var(--primary); font-weight: bold; }
+
+        /* Trạng thái */
+        .status { padding: 6px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; white-space: nowrap; border: 1px solid transparent; }
+        .st-danger { background: #fdecea; color: var(--danger); border-color: #fad2cf; }
+        .st-warning { background: #fff9c4; color: #827717; border-color: #fff176; }
+        .st-success { background: #e6f4ea; color: #1e7e34; border-color: #ceead6; }
+
+        /* Phần cập nhật */
+        .update-box { display: flex; gap: 5px; align-items: center; }
+        .date-input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        .btn-up { background: var(--primary); color: white; border: none; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-up:hover { background: #1557b0; }
+
+        #loading { text-align: center; display: none; color: var(--primary); font-weight: bold; padding: 10px; }
+        .header-box { display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📋 HỆ THỐNG CẬP NHẬT BẢO TRÌ</h2>
-    <div id="loading">⌛ Đang xử lý...</div>
+    <div class="header-box">
+        <h2>📋 QUẢN LÝ BẢO TRÌ THIẾT BỊ KLM</h2>
+        <button onclick="loadData()" style="cursor:pointer; border:1px solid var(--primary); background:none; color:var(--primary); padding:5px 10px; border-radius:4px; font-weight:bold;">🔄 Làm mới</button>
+    </div>
+
+    <div id="loading">⌛ Đang xử lý dữ liệu...</div>
 
     <div class="control-panel">
-        <input type="text" id="searchInput" class="search-input" onkeyup="filterByText()" placeholder="🔍 Tìm mã số hoặc tên máy...">
+        <input type="text" id="searchInput" class="search-input" onkeyup="filterByText()" placeholder="🔍 Tìm nhanh Mã số hoặc Tên máy...">
+        
         <div class="filter-group">
-            <button class="filter-btn" style="background:#607d8b" onclick="filterByStatus('all')">Tất cả</button>
-            <button class="filter-btn" style="background:var(--danger)" onclick="filterByStatus('CẦN BẢO TRÌ')">Cần bảo trì</button>
-            <button class="filter-btn" style="background:var(--warning); color:#333" onclick="filterByStatus('SẮP ĐẾN HẠN')">Sắp đến hạn</button>
-            <button class="filter-btn" style="background:var(--success)" onclick="filterByStatus('AN TOÀN')">An toàn</button>
+            <button class="filter-btn btn-all" onclick="filterByStatus('all')">Tất cả</button>
+            <button class="filter-btn btn-danger" onclick="filterByStatus('CẦN BẢO TRÌ')">Cần bảo trì</button>
+            <button class="filter-btn btn-warning" onclick="filterByStatus('SẮP ĐẾN HẠN')">Sắp đến hạn</button>
+            <button class="filter-btn btn-success" onclick="filterByStatus('AN TOÀN')">An toàn</button>
         </div>
     </div>
 
@@ -52,7 +83,7 @@
                     <th>Tên Thiết Bị</th>
                     <th>Hạn Tiếp Theo</th>
                     <th>Trạng Thái</th>
-                    <th>Cập Nhật Ngày Bảo Trì</th>
+                    <th>Cập Nhật Ngày Thực Hiện</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -64,13 +95,13 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgX1RvgaxsBZn-GIfr1EaPSBxAZqn1mvE0MZGovnAN1UW0rV_tk4HV-BN34FkF6xfV/exec";
 
     async function loadData() {
-        document.getElementById('loading').style.display = 'block';
+        showLoading(true);
         try {
             const res = await fetch(WEB_APP_URL);
             const data = await res.json();
             renderTable(data);
-        } catch (e) { alert("Lỗi tải dữ liệu!"); }
-        document.getElementById('loading').style.display = 'none';
+        } catch (e) { alert("Lỗi kết nối dữ liệu!"); }
+        showLoading(false);
     }
 
     function renderTable(data) {
@@ -81,63 +112,81 @@
         const todayStr = today.toISOString().split('T')[0];
 
         data.forEach(row => {
-            const code = row[1], name = row[2], lastDate = row[3], cycle = parseInt(row[4]);
-            if (!lastDate || !cycle) return;
+            const code = row[1], name = row[2], lastDateRaw = row[3], cycle = parseInt(row[4]);
+            if (!lastDateRaw || !cycle) return;
 
-            const dNext = new Date(lastDate);
-            dNext.setDate(dNext.getDate() + cycle);
+            const dLast = new Date(lastDateRaw);
+            const dNext = new Date(dLast);
+            dNext.setDate(dLast.getDate() + cycle);
+            dNext.setHours(0,0,0,0);
+
             const diffDays = Math.ceil((dNext - today) / (1000 * 60 * 60 * 24));
 
-            let stText = "AN TOÀN", stClass = "st-success";
-            if (diffDays <= 0) { stText = "CẦN BẢO TRÌ"; stClass = "st-danger"; }
-            else if (diffDays === 1) { stText = "SẮP ĐẾN HẠN"; stClass = "st-warning"; }
+            let statusText, statusClass;
+            if (diffDays <= 0) {
+                statusText = "CẦN BẢO TRÌ";
+                statusClass = "st-danger";
+            } else if (diffDays === 1) {
+                statusText = "SẮP ĐẾN HẠN";
+                statusClass = "st-warning";
+            } else {
+                statusText = "AN TOÀN";
+                statusClass = "st-success";
+            }
 
-            tbody.innerHTML += `
-                <tr data-status="${stText}">
-                    <td><b>${code}</b></td>
-                    <td>${name}</td>
-                    <td><b>${dNext.toLocaleDateString('vi-VN')}</b></td>
-                    <td><span class="status ${stClass}">${stText}</span></td>
-                    <td>
-                        <div class="update-box">
-                            <input type="date" class="date-input" id="date-${code}" value="${todayStr}">
-                            <button class="btn-up" onclick="updateMachineDate('${code}')">Cập nhật</button>
-                        </div>
-                    </td>
-                </tr>`;
+            const tr = document.createElement('tr');
+            tr.setAttribute("data-status", statusText);
+            tr.innerHTML = `
+                <td><b>${code}</b></td>
+                <td>${name}</td>
+                <td><b style="color:var(--primary)">${dNext.toLocaleDateString('vi-VN')}</b></td>
+                <td><span class="status ${statusClass}">${statusText}</span></td>
+                <td>
+                    <div class="update-box">
+                        <input type="date" class="date-input" id="date-${code}" value="${todayStr}">
+                        <button class="btn-up" onclick="updateMachineDate('${code}')">Cập nhật</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
     }
 
     async function updateMachineDate(code) {
         const newDate = document.getElementById(`date-${code}`).value;
-        if (!confirm(`Xác nhận cập nhật ngày bảo trì cho máy ${code} thành ${newDate}?`)) return;
+        if (!confirm(`Xác nhận cập nhật ngày bảo trì cho máy ${code}?`)) return;
 
-        document.getElementById('loading').style.display = 'block';
+        showLoading(true);
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 body: JSON.stringify({ action: "updateDate", code: code, newDate: newDate })
             });
-            alert("Đã cập nhật lên Google Sheets!");
+            alert("Đã cập nhật thành công lên Google Sheets!");
             loadData();
-        } catch (e) { alert("Lỗi khi cập nhật!"); }
-        document.getElementById('loading').style.display = 'none';
+        } catch (e) { alert("Lỗi khi gửi dữ liệu!"); }
+        showLoading(false);
     }
 
-    function filterByStatus(s) {
-        document.querySelectorAll("#machineTable tbody tr").forEach(r => {
-            r.classList.toggle("hidden", s !== 'all' && r.getAttribute("data-status") !== s);
+    function filterByStatus(status) {
+        const rows = document.querySelectorAll("#machineTable tbody tr");
+        rows.forEach(row => {
+            row.classList.toggle("hidden", status !== 'all' && row.getAttribute("data-status") !== status);
         });
     }
 
     function filterByText() {
-        const f = document.getElementById("searchInput").value.toUpperCase();
-        document.querySelectorAll("#machineTable tbody tr").forEach(r => {
-            r.classList.toggle("hidden", !r.innerText.toUpperCase().includes(f));
+        const filter = document.getElementById("searchInput").value.toUpperCase();
+        const rows = document.querySelectorAll("#machineTable tbody tr");
+        rows.forEach(row => {
+            row.classList.toggle("hidden", !row.innerText.toUpperCase().includes(filter));
         });
     }
 
+    function showLoading(s) { document.getElementById('loading').style.display = s ? 'block' : 'none'; }
+
     loadData();
 </script>
+
 </body>
 </html>
