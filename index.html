@@ -118,43 +118,43 @@
         } catch (e) { alert("Lỗi kết nối!"); }
         showLoading(false);
     }
+       function renderTable(data) {
+    const tbody = document.querySelector('#machineTable tbody');
+    tbody.innerHTML = '';
+    const now = new Date();
+    now.setHours(0,0,0,0);
 
-    function renderTable(data) {
-        const tbody = document.querySelector('#machineTable tbody');
-        tbody.innerHTML = '';
-        const now = new Date();
-        now.setHours(0,0,0,0);
+    data.forEach(row => {
+        // Thứ tự hàng lấy từ Google Sheets:
+        // row[0]: ID | row[1]: Mã số | row[2]: Tên máy | row[3]: Ngày gần nhất | row[4]: Chu kỳ
+        const code = row[1] || '';
+        const name = row[2] || '';
+        const lastDate = row[3];
+        const cycle = row[4] || 0;
 
-        data.forEach(row => {
-            // KHỚP CỘT THEO SHEET: 0:ID, 1:MaSo, 2:TenMay, 3:NgayGanNhat, 4:ChuKy
-            const code = row[1] || '';
-            const name = row[2] || '';
-            const lastDate = row[3];
-            const cycle = row[4] || 0;
+        if (!lastDate) return; // Bỏ qua hàng trống
 
-            if (!lastDate) return;
+        const dLast = new Date(lastDate);
+        const dNext = new Date(dLast);
+        dNext.setDate(dLast.getDate() + parseInt(cycle));
 
-            const dLast = new Date(lastDate);
-            const dNext = new Date(dLast);
-            dNext.setDate(dLast.getDate() + parseInt(cycle));
+        const isOverdue = now > dNext;
 
-            const isOverdue = now > dNext;
-
-            tbody.innerHTML += `
-                <tr>
-                    <td><b>${code}</b></td>
-                    <td>${name}</td>
-                    <td>${dLast.toLocaleDateString('vi-VN')}</td>
-                    <td>${cycle} ngày</td>
-                    <td><b style="color:var(--primary)">${dNext.toLocaleDateString('vi-VN')}</b></td>
-                    <td>
-                        <span class="status ${isOverdue ? 'overdue' : 'ok'}">
-                            ${isOverdue ? '⚠️ CẦN BẢO TRÌ' : '✅ AN TOÀN'}
-                        </span>
-                    </td>
-                </tr>`;
-        });
-    }
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${code}</strong></td>
+                <td>${name}</td>
+                <td>${dLast.toLocaleDateString('vi-VN')}</td>
+                <td>${cycle} ngày</td>
+                <td><b style="color:#1a73e8">${dNext.toLocaleDateString('vi-VN')}</b></td>
+                <td>
+                    <span class="status ${isOverdue ? 'overdue' : 'ok'}">
+                        ${isOverdue ? '⚠️ CẦN BẢO TRÌ' : '✅ AN TOÀN'}
+                    </span>
+                </td>
+            </tr>`;
+    });
+}
 
     function filterTable() {
         const filter = document.getElementById("searchInput").value.toUpperCase();
