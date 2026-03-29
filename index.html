@@ -90,8 +90,11 @@
 
             // Chuyển đổi ngày bảo trì gần nhất sang định dạng YYYY-MM-DD để gán vào ô input date
             const dLast = new Date(lastDateRaw);
-            const lastDateStr = dLast.toISOString().split('T')[0];
-
+            const year = dLast.getFullYear();
+            const month = String(dLast.getMonth() + 1).padStart(2, '0');
+            const day = String(dLast.getDate()).padStart(2, '0');
+            const lastDateStr = `${year}-${month}-${day}`;
+            
             const dNext = new Date(dLast);
             dNext.setDate(dLast.getDate() + cycle);
             dNext.setHours(0,0,0,0);
