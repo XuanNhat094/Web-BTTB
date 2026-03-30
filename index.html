@@ -109,7 +109,7 @@
 
             let stText = "AN TOÀN", stClass = "st-success";
             if (diffDays <= 0) { stText = "CẦN BẢO TRÌ"; stClass = "st-danger"; }
-            else if (diffDays === 1) { stText = "SẮP ĐẾN HẠN"; stClass = "st-warning"; }
+            else if (diffDays <= 2) { stText = "SẮP ĐẾN HẠN"; stClass = "st-warning"; }
 
             tbody.innerHTML += `
                 <tr data-status="${stText}">
